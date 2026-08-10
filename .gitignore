@@ -1,0 +1,55 @@
+# Packwiz / build outputs
+.packwizignore.local
+/dist/
+/build/
+/out/
+/gen/
+*.mrpack
+sky-frogs-*.zip
+
+# Mod jars (we track manifests, not jars)
+/mods/
+*.jar
+
+# Local runtime / test instance
+/run/
+/instances/
+/.minecraft/
+
+# Python tooling caches (from tools/*.py)
+.ruff_cache/
+__pycache__/
+
+# IDE
+/.idea/
+/.vscode/
+*.iml
+
+# Claude Code local runtime (per-user settings + scheduler lock; never shared)
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# Playwright MCP session artifacts (browser-automation snapshots/downloads)
+.playwright-mcp/
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+crash-reports/
+logs/
+
+# Ephemeral commit message buffers (used by long heredoc commit messages)
+.commit-msg-tmp
+
+# Reference pack (downloaded artifacts, not part of our work)
+*.zip
+
+# Local triage state for tools/cf_comments.py (which CF comments have been seen)
+tools/data/cf_comments_seen_*.json
+
+# Local per-user Claude Code settings (not shared)
+.claude/settings.local.json

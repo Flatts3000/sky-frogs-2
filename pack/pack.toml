@@ -1,0 +1,13 @@
+name = "Sky Frogs 2"
+author = "Flatts"
+version = "0.1.0"
+pack-format = "packwiz:1.1.0"
+
+[index]
+file = "index.toml"
+hash-format = "sha256"
+hash = "0518bf3aa9cb974db439697b122be101307b55e0f72d03a8eb38b6e026f3acef"
+
+[versions]
+minecraft = "26.1.2"
+neoforge = "26.1.2.94"

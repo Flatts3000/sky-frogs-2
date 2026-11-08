@@ -6,7 +6,7 @@
 
 ## Source
 
-- **Author:** Eebag (Discord `@Eebag`, id `145697265011523584`), a player who offered to give more feedback / clarification.
+- **Author:** Eebag (Discord `@Eebag`), a player who offered to give more feedback / clarification.
 - **Playtest basis:** majority of the run on **v1.4.1 / MC 1.21.1**.
 - **Credibility signal:** says he wrote the same kind of document for the **Star Technology** pack in its infancy and watched it grow; genuinely wants Productive Frogs / Sky Frogs to succeed ("all love from another frog lover"). Had considered making a Productive-Frogs-style mod himself (started as a Ribbits expansion). Framed everything as "this pack is your personal vision, deny anything that doesn't fit."
 - **Original file:** `Sky Frogs Suggestions.pdf` (maintainer's local Downloads, received 2026-07-05).

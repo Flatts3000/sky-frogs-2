@@ -45,7 +45,7 @@ what is genuinely undecided.
 - Minecraft: **26.1.2**. Not 26.2 - KubeJS and FTB Quests have no 26.2 build, and
   Productive Frogs 2.x targets 26.1.2. 26.1.2 is the only version the whole stack
   shares.
-- Loader: **NeoForge 26.1.2.94** (latest 26.1.2.x as of 2026-08-10).
+- Loader: **NeoForge 26.1.2.126** (latest 26.1.2.x as of 2026-11-08).
 - Java: **25**.
 - Distribution: **CurseForge only**, same constraint as SF1 - the FTB utility
   stack is CF-only and Modrinth forbids inlining CF jars as overrides. Productive
@@ -74,15 +74,16 @@ Lead, unvetted (2026-11-08): a different mod, "Sky Block Builder" (CurseForge sl
 
 ## Current pin state
 
-Six mods, all verified present for 26.1.2:
+Seven mods (including the FTB Library, FTB Teams and Rhino dependencies), all verified present for 26.1.2:
 
 | Mod | Pin | Why |
 |---|---|---|
-| KubeJS | 8.0.4 | scripting spine; pulls Rhino |
-| FTB Quests | 26.1.2.3 | quest book; pulls FTB Library + FTB Teams |
+| KubeJS | 8.0.8 | scripting spine; pulls Rhino |
+| FTB Quests | 26.1.2.10 | quest book; pulls FTB Library + FTB Teams |
 | Ex Deorum | 4.0 | the Builders' Sieve, which D-3 makes load-bearing (5.x is 26.2-only, do not take it) |
+| Productive Frogs | 2.0.0-alpha.5 | the pack's central dependency; alpha only, there is no stable 2.x (CF file 8774417) |
 
-Productive Frogs is **not pinned yet**. It was held back for blocker 1, which is resolved (alpha.5 exists for 26.1.2); pinning it is the next step.
+FTB Library is at 26.1.2.12 and FTB Teams at 26.1.2.5 (pulled in by FTB Quests).
 
 ## Project conventions
 

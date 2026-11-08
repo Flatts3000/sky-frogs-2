@@ -26,6 +26,11 @@ hash = "e1634fb529876c6e4ea001830deb4512f68350bb341c06b76f882db946cf19f1"
 metafile = true
 
 [[files]]
+file = "mods/productive-frogs.pw.toml"
+hash = "7576c7e4b7ef40b873e373c5db28dcd1a0f33fd49d753beeba94fe6d688de718"
+metafile = true
+
+[[files]]
 file = "mods/rhino.pw.toml"
 hash = "985a99f7465b68e43b98f3dbe1081b7113d957c7926a8caab163503528910f42"
 metafile = true

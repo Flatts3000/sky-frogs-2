@@ -1,0 +1,187 @@
+name: Release
+
+# Tag-driven release, ported from Sky Frogs 1. Cut one with:
+#   (bump pack/pack.toml version + update CHANGELOG.md, commit, then)
+#   git tag vX.Y.Z && git push origin vX.Y.Z
+#
+# This builds the CurseForge export, creates a GitHub release with the zip and the
+# matching CHANGELOG section, uploads the file to CurseForge, and posts the notes
+# to Discord.
+#
+# Secrets and variables (all optional; a missing one skips its step with a warning
+# and the GitHub release still ships):
+#   secrets.CF_API_TOKEN               CurseForge upload token
+#   vars.CF_GAME_VERSIONS              JSON array of CurseForge MODPACK-class game-version
+#                                      IDs for MC 26.1.2 and NeoForge, e.g. [1234, 10150].
+#                                      Not the mod-class IDs. Left unset on purpose: the
+#                                      26.1.2 ID has not been looked up yet.
+#   secrets.DISCORD_CHANGELOG_WEBHOOK  Discord #changelog webhook
+#
+# Not ported from Sky Frogs 1: the dedicated-server pack build and upload (needs
+# tools/build_server.py and a Java 25 launcher), and the BCC/BBL version stamping and
+# pack-config check (this pack has no such configs yet).
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write # create GitHub releases
+
+env:
+  CF_PROJECT_ID: "1792029"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Resolve version from tag
+        id: ver
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache: false # no go.sum in this repo (packwiz is `go install`-ed); skip the cache restore
+
+      - name: Install packwiz
+        run: |
+          go install github.com/packwiz/packwiz@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Guard - pack.toml version matches the tag
+        run: |
+          pack_ver=$(grep -E '^version *= *' pack/pack.toml | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
+          if [ "$pack_ver" != "${{ steps.ver.outputs.version }}" ]; then
+            echo "::error::pack.toml version ($pack_ver) does not match tag (${{ steps.ver.outputs.version }}). Bump pack.toml before tagging."
+            exit 1
+          fi
+
+      - name: Build CurseForge export
+        id: build
+        run: |
+          cd pack
+          packwiz refresh
+          packwiz curseforge export
+          zip=$(ls *.zip)
+          echo "zip_path=pack/$zip" >> "$GITHUB_OUTPUT"
+          echo "built: pack/$zip"
+
+      - name: Extract changelog section and build CF metadata
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+          CF_GAME_VERSIONS: ${{ vars.CF_GAME_VERSIONS }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re
+          version = os.environ["VERSION"]
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+          m = re.search(r"## \[" + re.escape(version) + r"\][^\n]*\n(.*?)(?=\n## \[|\Z)", text, re.S)
+          cl = (m.group(1).strip() if m else f"Release {version}")
+          open("release_notes.md", "w", encoding="utf-8").write(cl)
+          # 0.x is pre-release; Sky Frogs 2 is alpha until it is playable.
+          release_type = "alpha" if version.startswith("0.") else "release"
+          raw = os.environ.get("CF_GAME_VERSIONS", "").strip()
+          meta = {
+              "changelog": cl,
+              "changelogType": "markdown",
+              "displayName": f"Sky Frogs 2 {version}",
+              "releaseType": release_type,
+          }
+          if raw:
+              meta["gameVersions"] = json.loads(raw)
+          json.dump(meta, open("cf_meta.json", "w", encoding="utf-8"))
+          print("release_type:", release_type, "| changelog chars:", len(cl), "| game versions set:", bool(raw))
+          PY
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          prerelease=""
+          case "${{ steps.ver.outputs.version }}" in
+            0.*|*-*) prerelease="--prerelease" ;;
+          esac
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "${GITHUB_REF_NAME}" \
+            --notes-file release_notes.md \
+            $prerelease \
+            "${{ steps.build.outputs.zip_path }}"
+
+      - name: Upload to CurseForge
+        id: cf
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_GAME_VERSIONS: ${{ vars.CF_GAME_VERSIONS }}
+        run: |
+          if [ -z "$CF_API_TOKEN" ]; then
+            echo "::warning::CF_API_TOKEN not set - skipping CurseForge upload. The GitHub release shipped; upload the asset manually via the CF web UI."
+            exit 0
+          fi
+          if [ -z "$CF_GAME_VERSIONS" ]; then
+            echo "::warning::vars.CF_GAME_VERSIONS not set - skipping CurseForge upload (a modpack upload needs the MC 26.1.2 and NeoForge game-version IDs). The GitHub release shipped."
+            exit 0
+          fi
+          resp=$(curl -s -w '\n%{http_code}' -X POST \
+            -H "X-Api-Token: $CF_API_TOKEN" \
+            -F "metadata=<cf_meta.json" \
+            -F "file=@${{ steps.build.outputs.zip_path }}" \
+            "https://minecraft.curseforge.com/api/projects/${CF_PROJECT_ID}/upload-file")
+          body=$(printf '%s' "$resp" | sed '$d')
+          code=$(printf '%s' "$resp" | tail -n1)
+          echo "HTTP $code: $body"
+          if [ "$code" != "200" ]; then
+            echo "::error::CurseForge upload failed (HTTP $code): $body"
+            exit 1
+          fi
+          fileid=$(printf '%s' "$body" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
+          echo "fileid=$fileid" >> "$GITHUB_OUTPUT"
+          url="https://www.curseforge.com/minecraft/modpacks/sky-frogs-2/files/$fileid"
+          echo "CurseForge file: $url"
+          echo "### CurseForge file [$fileid]($url)" >> "$GITHUB_STEP_SUMMARY"
+
+      # Full release notes -> the Discord #changelog channel. The GitHub-release embed
+      # truncates long bodies; this posts the whole CHANGELOG section, chunked under
+      # Discord's 2000-char message cap on line boundaries.
+      - name: Post release notes to Discord #changelog
+        if: always() # notes should land even if the CurseForge upload failed
+        env:
+          DISCORD_CHANGELOG_WEBHOOK: ${{ secrets.DISCORD_CHANGELOG_WEBHOOK }}
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          if [ -z "$DISCORD_CHANGELOG_WEBHOOK" ]; then
+            echo "::warning::DISCORD_CHANGELOG_WEBHOOK not set - skipping the Discord changelog post."
+            exit 0
+          fi
+          python3 - <<'PY'
+          import json, os, time, urllib.request
+
+          hook = os.environ["DISCORD_CHANGELOG_WEBHOOK"]
+          version = os.environ["VERSION"]
+          notes = open("release_notes.md", encoding="utf-8").read().strip()
+          gh_url = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY', 'Flatts3000/sky-frogs-2')}/releases/tag/v{version}"
+
+          header = f"# Sky Frogs 2 v{version}\n<{gh_url}>"
+          chunks, cur = [header], ""
+          for line in notes.splitlines():
+              if len(cur) + len(line) + 1 > 1900:  # headroom under the 2000 cap
+                  chunks.append(cur)
+                  cur = line
+              else:
+                  cur = f"{cur}\n{line}" if cur else line
+          if cur:
+              chunks.append(cur)
+
+          for i, chunk in enumerate(chunks):
+              payload = json.dumps({"content": chunk, "allowed_mentions": {"parse": []}}).encode()
+              req = urllib.request.Request(
+                  hook, data=payload,
+                  headers={"Content-Type": "application/json", "User-Agent": "sky-frogs-2-release"})
+              with urllib.request.urlopen(req) as resp:
+                  resp.read()
+              time.sleep(1)  # stay friendly with the webhook rate limit
+          print(f"posted {len(chunks)} message(s) to #changelog")
+          PY

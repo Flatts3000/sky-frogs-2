@@ -7,22 +7,22 @@ metafile = true
 
 [[files]]
 file = "mods/ftb-library-forge.pw.toml"
-hash = "facc609e77625b3571b3dfb49b56bf63c756859f640fac7ad90ece82b4bf4be4"
+hash = "4f15b4ccacfadd7db9027c233646473c898daf4cfc91b2fe134d25f4f7ffa646"
 metafile = true
 
 [[files]]
 file = "mods/ftb-quests-forge.pw.toml"
-hash = "82b33212cd74a7670abbd249a24df696b3ae2f23ede7a7f5b57246f115b16b5e"
+hash = "f2969e329ab81673fa4f1bf34c7bf96e796353e501564c824eb4250bb4c78b08"
 metafile = true
 
 [[files]]
 file = "mods/ftb-teams-forge.pw.toml"
-hash = "cb69112ea7c492ee73426fb503af2d834c8bafcd8341188c99ea6dc56d38de6f"
+hash = "6da8dd62f4f281ff1813b455fa51b334fc63f5d95f5a46b1d9c62e599582bf6e"
 metafile = true
 
 [[files]]
 file = "mods/kubejs.pw.toml"
-hash = "04b9bc450a5cd1f4d687a1d937c5f0de62c568063405a793e7f3596849785f7e"
+hash = "e1634fb529876c6e4ea001830deb4512f68350bb341c06b76f882db946cf19f1"
 metafile = true
 
 [[files]]

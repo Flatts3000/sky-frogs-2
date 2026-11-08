@@ -16,9 +16,9 @@ The evidence behind those calls is in [`docs/sf1_retrospective.md`](./docs/sf1_r
 
 ## Blockers
 
-Two, both verified against live CurseForge data:
+One open, verified against live CurseForge data (2026-11-08):
 
-1. **Productive Frogs 2.x is not published.** Tagged `v2.0.0-alpha.4` in git; every published file is still 1.21.1. The pack's central dependency cannot be pinned yet.
+1. ~~Productive Frogs 2.x is not published.~~ Resolved: PF 2.0.0 alphas are on CurseForge for 26.1.2 (latest `2.0.0-alpha.5`). The files page hides alphas by default, which is why this was missed. No stable 2.0.0 yet.
 2. **Skyblock Builder has no 26.x build.** The one dependency with no substitute. The fallback is a datapack void world plus a structure-placed island, which costs team islands. Undecided.
 
 ## Building

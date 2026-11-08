@@ -53,22 +53,11 @@ what is genuinely undecided.
 
 ## Blockers (read before planning anything)
 
-Both are real, both are verified against live CurseForge data, and neither has a
-workaround that is merely a matter of effort.
+One blocker is open (2). Blocker 1 was resolved in fact and corrected in the SCRUB of 2026-11-08.
 
-### 1. Productive Frogs 2.x is not published
+### 1. Productive Frogs 2.x is not published - RESOLVED (corrected 2026-11-08)
 
-The pack is built around Productive Frogs. `v2.0.0-alpha.4` is **tagged in git**
-but **all 38 published CurseForge files are 1.21.1** - 2.x has never been
-uploaded. `packwiz cf add productive-frogs` cannot pin a 26.1.2 build, so the
-pack's central dependency is unpinnable.
-
-This one is entirely within our control: it needs a PF 2.x CurseForge release,
-not a third party. Until then the pack can be scaffolded and can pin everything
-else, but it cannot be assembled or playtested.
-
-Not previously recorded in the decision log; found while scaffolding on
-2026-08-10.
+This was wrong. The CurseForge files page hides alpha files by default ("Show alpha files" is off), so the default view showed only the 1.21.1 releases and betas. With alphas shown, PF 2.0.0 alphas are published for 26.1.2 on NeoForge: alpha.2 (2026-07-09, file 8402058) and alpha.5 (2026-08-31, file 8774417), both type A. The newest is `v2.0.0-alpha.5`. There is no stable 2.0.0. Pinning with `packwiz cf add productive-frogs` needs alpha files allowed, and still needs to be tried. Verified by reading the CurseForge file pages on 2026-11-08.
 
 ### 2. Skyblock Builder has no 26.x build
 
@@ -81,6 +70,8 @@ island, which drops the dependency but also drops `/skyblock create` team
 islands. **Undecided** - see the decision log's blockers section. Whichever way
 it goes should be written up as D-4 before any worldgen work starts.
 
+Lead, unvetted (2026-11-08): a different mod, "Sky Block Builder" (CurseForge slug `sky-block-mod`), lists `SkyBlockMod-26.1.2-1.0.0` for NeoForge 26.1.2 (2026-07-06) with a skyblock world preset, island templates and team management. It is not ChaoticTrials' Skyblock Builder, and its licence, dependencies and feature parity have not been checked.
+
 ## Current pin state
 
 Six mods, all verified present for 26.1.2:
@@ -91,7 +82,7 @@ Six mods, all verified present for 26.1.2:
 | FTB Quests | 26.1.2.3 | quest book; pulls FTB Library + FTB Teams |
 | Ex Deorum | 4.0 | the Builders' Sieve, which D-3 makes load-bearing (5.x is 26.2-only, do not take it) |
 
-Productive Frogs is **deliberately absent** per blocker 1.
+Productive Frogs is **not pinned yet**. It was held back for blocker 1, which is resolved (alpha.5 exists for 26.1.2); pinning it is the next step.
 
 ## Project conventions
 

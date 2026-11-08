@@ -1,6 +1,22 @@
 # CLAUDE.md
 
-Guidance for Claude Code working in this repo.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Commands
+
+There is no build, lint or test suite; the repo is a packwiz modpack (data only). Requires `packwiz` on PATH and Python 3.
+
+- Refresh the index after any edit under `pack/`: `python tools/pack_refresh.py` (never bare `packwiz refresh`; see Project conventions).
+- Check for mod updates without applying: `cd pack && echo n | packwiz update --all`. Apply with `packwiz update --all -y`, then refresh.
+- Pin a CurseForge file: `cd pack && packwiz curseforge add --addon-id <project-id> --file-id <file-id> -y`. Alpha files need an explicit file ID; the CurseForge files page hides alphas by default.
+- `.github/workflows/` and `.githooks/` exist as empty, untracked directories. Nothing runs automatically.
+- The local repo has no git remote. `gh issue` / `gh pr` and `pr-review` fail until one is added.
+
+## Architecture
+
+- `pack/pack.toml` holds the Minecraft and NeoForge pins; `pack/index.toml` is the hash index; `pack/mods/*.pw.toml` are one metadata file per mod (CurseForge project ID plus pinned file ID). No jars are committed.
+- `pack/index.toml` and `pack/pack.toml` must be committed together with any `pack/` change, because the index hashes working-tree bytes (see `tools/pack_refresh.py` for why).
+- Design authority is `docs/decisions.md`; `docs/sf1_retrospective.md` and `docs/player_feedback.md` are evidence, not instructions.
 
 ## What this is
 

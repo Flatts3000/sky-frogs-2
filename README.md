@@ -30,7 +30,7 @@ cd pack
 packwiz refresh          # or, from the repo root: python tools/pack_refresh.py
 ```
 
-Minecraft 26.1.2, NeoForge 26.1.2.94, Java 25.
+Minecraft 26.1.2, NeoForge 26.1.2.126, Java 25.
 
 ## License
 
